@@ -5,19 +5,30 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
 
+interface CareerRequestBody {
+  subject: string
+  grade: string
+}
+
+interface CareerInfo {
+  entryLevelJobs: string[]
+  salaryRanges: string[]
+  growthOpportunities: string[]
+}
+
 export async function POST(req: Request) {
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 })
   }
 
-  const { subject, grade } = await req.json()
+  const { subject, grade }: CareerRequestBody = await req.json()
 
   try {
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
-        {"role": "system", "content": "You are a career advisor for Indian students. Provide career information in a structured format."},
-        {"role": "user", "content": generatePrompt(subject, grade)}
+        { "role": "system", "content": "You are a career advisor for Indian students. Provide career information in a structured format." },
+        { "role": "user", "content": generatePrompt(subject, grade) }
       ],
       temperature: 0.7,
     })
@@ -26,16 +37,17 @@ export async function POST(req: Request) {
     if (!content) {
       throw new Error('No content received from OpenAI')
     }
+
     const parsedContent = parseCareerInfo(content)
 
     return NextResponse.json({ careerInfo: parsedContent })
-  } catch(error: any) {
-    if (error.response) {
-      console.error(error.response.status, error.response.data)
-      return NextResponse.json({ error: error.response.data }, { status: error.response.status })
-    } else {
+  } catch (error) {
+    if (error instanceof Error) {
       console.error(`Error with OpenAI API request: ${error.message}`)
-      return NextResponse.json({ error: 'An error occurred during your request.' }, { status: 500 })
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    } else {
+      console.error('Unknown error', error)
+      return NextResponse.json({ error: 'An unknown error occurred.' }, { status: 500 })
     }
   }
 }
@@ -59,7 +71,7 @@ function generatePrompt(subject: string, grade: string) {
 - [Opportunity 3]`
 }
 
-function parseCareerInfo(content: string) {
+function parseCareerInfo(content: string): CareerInfo {
   const sections = content.split('\n\n')
   const entryLevelJobs = sections[0].split('\n').slice(1).map(job => job.trim().replace('- ', ''))
   const salaryRanges = sections[1].split('\n').slice(1).map(salary => salary.trim().replace('- ', ''))

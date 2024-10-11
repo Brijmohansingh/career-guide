@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Users, Lightbulb, Target } from 'lucide-react'
+import Image from 'next/image'
 
 export default function AboutPage() {
   const teamMembers = [
@@ -81,7 +82,7 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <Card key={index} className="shadow-lg">
                 <CardContent className="flex flex-col items-center p-6">
-                  <img src={member.image} alt={member.name} className="w-24 h-24 rounded-full mb-4" />
+                  <Image src={member.image} alt={member.name} width={96} height={96} className="w-24 h-24 rounded-full mb-4" />
                   <h3 className="text-xl font-semibold text-gray-800">{member.name}</h3>
                   <p className="text-gray-600">{member.role}</p>
                 </CardContent>
@@ -99,7 +100,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-gray-800 mb-4">Ready to Shape Your Future?</h2>
           <p className="text-xl text-gray-600 mb-6">Let our expert team guide you towards a fulfilling career path.</p>
           <Button asChild className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105">
-            <Link href="/">Get Started</Link>
+            <Link href="/contact">Get Started</Link>
           </Button>
         </motion.div>
       </main>

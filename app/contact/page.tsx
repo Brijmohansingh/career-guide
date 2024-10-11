@@ -44,15 +44,26 @@ export default function ContactUs() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-100 to-purple-100">
       <Toaster position="top-center" />
-      <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-6 shadow-lg">
+      <header className="bg-white shadow-md">
+        <nav className="container mx-auto flex justify-between items-center py-6 px-4">
+          <Link href="/" className="text-3xl font-bold text-indigo-600">Career Guide</Link>
+          <ul className="flex space-x-6">
+            <li><Link href="/" className="text-gray-600 hover:text-indigo-600 transition-colors">Home</Link></li>
+            <li><Link href="/about" className="text-gray-600 hover:text-indigo-600 transition-colors">About</Link></li>
+            <li><Link href="/contact" className="text-gray-600 hover:text-indigo-600 transition-colors">Contact</Link></li>
+          </ul>
+        </nav>
+      </header>
+      {/* use for blue clour on header  <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-6 shadow-lg">
         <nav className="container mx-auto flex justify-between items-center px-4">
           <Link href="/" className="text-3xl font-bold">Career Guide</Link>
           <ul className="flex space-x-6">
             <li><Link href="/" className="hover:text-indigo-200 transition-colors">Home</Link></li>
+            <li><Link href="/about" className="hover:text-indigo-200 transition-colors">About</Link></li>
             <li><Link href="/contact" className="hover:text-indigo-200 transition-colors">Contact Us</Link></li>
           </ul>
         </nav>
-      </header>
+      </header> */}
 
       <main className="flex-grow container mx-auto py-12 px-4">
         <Card className="max-w-2xl mx-auto shadow-xl">
@@ -122,7 +133,7 @@ export default function ContactUs() {
               <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
               <li><Link href="/" className="hover:text-indigo-200 transition-colors">Home</Link></li>
-  <li><Link href="/plans" className="hover:text-indigo-200 transition-colors">Plans</Link></li>
+  <li><Link href="/about" className="hover:text-indigo-200 transition-colors">About</Link></li>
   <li><Link href="/contact" className="hover:text-indigo-200 transition-colors">Contact Us</Link></li>
               </ul>
             </div>
