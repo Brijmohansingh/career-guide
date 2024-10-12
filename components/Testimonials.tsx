@@ -26,7 +26,7 @@ export function Testimonials() {
         {testimonials.map((testimonial, index) => (
           <Card key={index} className="shadow-lg">
             <CardContent className="p-6">
-              <p className="text-gray-600 mb-4">"{testimonial.content}"</p>
+              <p className="text-gray-600 mb-4">&ldquo;{testimonial.content}&rdquo;</p>
               <div className="font-semibold">{testimonial.name}</div>
               <div className="text-sm text-gray-500">{testimonial.role}</div>
             </CardContent>
