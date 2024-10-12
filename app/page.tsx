@@ -10,6 +10,10 @@ import Link from 'next/link'
 import { ConsultationModal } from '@/components/ConsultationModal'
 import { motion } from 'framer-motion'
 import { Sparkles, BookOpen, TrendingUp } from 'lucide-react'
+import { ProgressIndicator } from '@/components/ProgressIndicator'
+import { CareerQuiz } from '@/components/CareerQuiz'
+import { Footer } from '@/components/Footer'
+import { Testimonials } from '@/components/Testimonials'
 
 interface CareerInfo {
   entryLevelJobs: string[];
@@ -32,9 +36,15 @@ export default function CareerGuide() {
   const [careerInfo, setCareerInfo] = useState<CareerInfo | null>(null)
   const [loading, setLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentStep, setCurrentStep] = useState(0)
 
   const subjects = ['Chemistry', 'Physics', 'Mathematics', 'Biology', 'Computer Science']
   const grades = Object.keys(gradeToMarks)
+  const steps = [
+    { title: 'Select Subject', completed: false },
+    { title: 'Choose Grade', completed: false },
+    { title: 'View Insights', completed: false },
+  ]
 
   useEffect(() => {
     if (grade) {
@@ -49,6 +59,8 @@ export default function CareerGuide() {
     try {
       const response = await axios.post('/api/career-info', { subject, grade })
       setCareerInfo(response.data.careerInfo)
+      setCurrentStep(3)
+      steps[2].completed = true
     } catch (error) {
       console.error('Error fetching career info:', error)
       toast.error('Failed to fetch career information. Please try again.')
@@ -56,33 +68,47 @@ export default function CareerGuide() {
     setLoading(false)
   }
 
+  const handleSubjectChange = (value: string) => {
+    setSubject(value)
+    setCurrentStep(1)
+    steps[0].completed = true
+  }
+
+  const handleGradeChange = (value: string) => {
+    setGrade(value)
+    setCurrentStep(2)
+    steps[1].completed = true
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 to-purple-100">
       <Toaster position="top-center" />
-      <header className="bg-white shadow-md">
-        <nav className="container mx-auto flex justify-between items-center py-6 px-4">
+      <header className="bg-white shadow-md py-6">
+        <nav className="container mx-auto px-6 flex justify-between items-center">
           <Link href="/" className="text-3xl font-bold text-indigo-600">Career Guide</Link>
-          <ul className="flex space-x-6">
-            <li><Link href="/" className="text-gray-600 hover:text-indigo-600 transition-colors">Home</Link></li>
-            <li><Link href="/about" className="text-gray-600 hover:text-indigo-600 transition-colors">About</Link></li>
-            <li><Link href="/contact" className="text-gray-600 hover:text-indigo-600 transition-colors">Contact</Link></li>
+          <ul className="flex space-x-8">
+            <li><Link href="/" className="text-gray-600 hover:text-indigo-600 transition-colors text-lg">Home</Link></li>
+            <li><Link href="/about" className="text-gray-600 hover:text-indigo-600 transition-colors text-lg">About</Link></li>
+            <li><Link href="/contact" className="text-gray-600 hover:text-indigo-600 transition-colors text-lg">Contact</Link></li>
           </ul>
         </nav>
       </header>
 
-      <main className="flex-grow container mx-auto py-12 px-4">
+      <main className="flex-grow container mx-auto py-16 px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Discover Your Ideal Career Path</h1>
-          <p className="text-xl text-gray-600">Unlock your potential and explore exciting career opportunities tailored to your interests and academic performance.</p>
+          <h1 className="text-5xl font-bold text-gray-800 mb-6">Discover Your Ideal Career Path</h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">Unlock your potential and explore exciting career opportunities tailored to your interests and academic performance.</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card className="md:col-span-1 shadow-xl">
+        <ProgressIndicator steps={steps} currentStep={currentStep} />
+
+        <div className="grid md:grid-cols-2 gap-12 mb-16">
+          <Card className="shadow-xl">
             <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
               <CardTitle className="text-2xl font-bold">Explore Your Career Path</CardTitle>
             </CardHeader>
@@ -90,7 +116,7 @@ export default function CareerGuide() {
               <form className="space-y-6">
                 <div className="space-y-2">
                   <label htmlFor="subject" className="text-lg font-medium text-gray-700">Select Your Subject</label>
-                  <Select onValueChange={setSubject}>
+                  <Select onValueChange={handleSubjectChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose a subject" />
                     </SelectTrigger>
@@ -103,7 +129,7 @@ export default function CareerGuide() {
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="grade" className="text-lg font-medium text-gray-700">Select Your Grade</label>
-                  <Select onValueChange={setGrade}>
+                  <Select onValueChange={handleGradeChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose your grade" />
                     </SelectTrigger>
@@ -119,14 +145,14 @@ export default function CareerGuide() {
                     <p className="text-sm font-medium text-indigo-800">Equivalent marks: {marks}</p>
                   </div>
                 )}
-                <Button onClick={fetchCareerInfo} disabled={loading} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
+                <Button onClick={fetchCareerInfo} disabled={loading || !subject || !grade} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white">
                   {loading ? 'Analyzing...' : 'Get Career Insights'}
                 </Button>
               </form>
             </CardContent>
           </Card>
 
-          <Card className="md:col-span-1 shadow-xl">
+          <Card className="shadow-xl">
             <CardHeader className="bg-gradient-to-r from-purple-600 to-pink-500 text-white">
               <CardTitle className="text-2xl font-bold">Career Insights</CardTitle>
             </CardHeader>
@@ -171,17 +197,24 @@ export default function CareerGuide() {
           </Card>
         </div>
 
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Discover Your Career Path</h2>
+          <CareerQuiz />
+        </div>
+
+        <Testimonials />
+
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="mt-12 text-center"
+          className="text-center mt-16"
         >
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Ready to Take the Next Step?</h2>
-          <p className="text-xl text-gray-600 mb-6">Get personalized guidance from our expert career counselors and unlock your full potential.</p>
+          <h2 className="text-4xl font-bold text-gray-800 mb-6">Ready to Take the Next Step?</h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">Get personalized guidance from our expert career counselors and unlock your full potential.</p>
           <Button
             onClick={() => setIsModalOpen(true)}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-4 rounded-full text-xl font-semibold shadow-lg transition-all duration-300 transform hover:scale-105"
           >
             Book a Free Consultation
           </Button>
@@ -190,32 +223,7 @@ export default function CareerGuide() {
         <ConsultationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       </main>
 
-      <footer className="bg-gray-800 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-12">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">About Us</h3>
-              <p className="text-gray-300">We help students make informed decisions about their career paths, providing expert guidance and insights.</p>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li><Link href="/" className="text-gray-300 hover:text-white transition-colors">Home</Link></li>
-                <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors">About</Link></li>
-                <li><Link href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
-              <p className="text-gray-300">Email: info@careerguide.com</p>
-              <p className="text-gray-300">Phone: +1 (123) 456-7890</p>
-            </div>
-          </div>
-          <div className="mt-12 text-center text-gray-400">
-            © 2023 Career Guide. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

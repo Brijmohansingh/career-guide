@@ -1,12 +1,23 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/react'
+import { Metadata } from 'next'
 
-const inter = Inter({ subsets: ['latin'] })
-
-export const metadata = {
-  title: 'Indian Student Career Guide',
-  description: 'Get personalized career advice based on your subject and grade.',
+export const metadata: Metadata = {
+  title: 'Career Guide - Discover Your Ideal Career Path',
+  description: 'Unlock your potential and explore exciting career opportunities tailored to your interests and academic performance with Career Guide.',
+  openGraph: {
+    title: 'Career Guide - Discover Your Ideal Career Path',
+    description: 'Unlock your potential and explore exciting career opportunities tailored to your interests and academic performance with Career Guide.',
+    images: [{ url: '/og-image.jpg' }],
+    type: 'website',
+    url: 'https://your-career-guide-url.com', // Replace with your actual URL
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Career Guide - Discover Your Ideal Career Path',
+    description: 'Unlock your potential and explore exciting career opportunities tailored to your interests and academic performance with Career Guide.',
+    images: ['/og-image.jpg'],
+    creator: '@yourTwitterHandle', // Replace with your Twitter handle
+  },
 }
 
 export default function RootLayout({
@@ -16,10 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Analytics />
-      </body>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
+      <body>{children}</body>
     </html>
   )
 }
