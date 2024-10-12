@@ -9,7 +9,7 @@ import axios from 'axios'
 import Link from 'next/link'
 import { ConsultationModal } from '@/components/ConsultationModal'
 import { motion } from 'framer-motion'
-import { Sparkles, BookOpen, TrendingUp } from 'lucide-react'
+import { Sparkles, BookOpen, TrendingUp, Briefcase, ChevronDown, ChevronUp } from 'lucide-react'
 import { ProgressIndicator } from '@/components/ProgressIndicator'
 import { CareerQuiz } from '@/components/CareerQuiz'
 import { Footer } from '@/components/Footer'
@@ -29,6 +29,11 @@ const gradeToMarks: { [key: string]: number } = {
   'F': 35
 }
 
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export default function CareerGuide() {
   const [subject, setSubject] = useState('')
   const [grade, setGrade] = useState('')
@@ -37,6 +42,7 @@ export default function CareerGuide() {
   const [loading, setLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
+  const [openFAQIndex, setOpenFAQIndex] = useState<number | null>(null)
 
   const subjects = ['Chemistry', 'Physics', 'Mathematics', 'Biology', 'Computer Science']
   const grades = Object.keys(gradeToMarks)
@@ -44,6 +50,21 @@ export default function CareerGuide() {
     { title: 'Select Subject', completed: false },
     { title: 'Choose Grade', completed: false },
     { title: 'View Insights', completed: false },
+  ]
+
+  const faqItems: FAQItem[] = [
+    {
+      question: "How does Career Guide help me?",
+      answer: "Career Guide provides personalized career recommendations based on your interests, skills, and academic performance. We offer in-depth insights into various career paths, salary expectations, and growth opportunities."
+    },
+    {
+      question: "Is Career Guide free to use?",
+      answer: "Yes, our basic services are free. We also offer premium features for a more comprehensive career guidance experience."
+    },
+    {
+      question: "How accurate are the career recommendations?",
+      answer: "Our recommendations are based on extensive research and data analysis. However, they should be used as a guide, and we encourage users to explore and research further."
+    },
   ]
 
   useEffect(() => {
@@ -80,12 +101,23 @@ export default function CareerGuide() {
     steps[1].completed = true
   }
 
+  const toggleFAQ = (index: number) => {
+    if (openFAQIndex === index) {
+      setOpenFAQIndex(null)
+    } else {
+      setOpenFAQIndex(index)
+    }
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-50 to-purple-100">
       <Toaster position="top-center" />
       <header className="bg-white shadow-md py-6">
         <nav className="container mx-auto px-6 flex justify-between items-center">
-          <Link href="/" className="text-3xl font-bold text-indigo-600">Career Guide</Link>
+          <Link href="/" className="text-3xl font-bold text-indigo-600 flex items-center">
+            <Briefcase className="mr-2 h-8 w-8" />
+            Career Guide
+          </Link>
           <ul className="flex space-x-8">
             <li><Link href="/" className="text-gray-600 hover:text-indigo-600 transition-colors text-lg">Home</Link></li>
             <li><Link href="/about" className="text-gray-600 hover:text-indigo-600 transition-colors text-lg">About</Link></li>
@@ -203,6 +235,26 @@ export default function CareerGuide() {
         </div>
 
         <Testimonials />
+
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-center mb-8">Frequently Asked Questions</h2>
+          <div className="w-full max-w-2xl mx-auto">
+            {faqItems.map((item, index) => (
+              <div key={index} className="mb-4 border-b border-gray-200 pb-4">
+                <button
+                  className="flex justify-between items-center w-full text-left"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <span className="text-lg font-medium">{item.question}</span>
+                  {openFAQIndex === index ? <ChevronUp /> : <ChevronDown />}
+                </button>
+                {openFAQIndex === index && (
+                  <p className="mt-2 text-gray-600">{item.answer}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
