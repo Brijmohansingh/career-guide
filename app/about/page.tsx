@@ -10,8 +10,8 @@ import Image from 'next/image'
 export default function AboutPage() {
   const teamMembers = [
     { name: "Dr. Emily Chen", role: "Career Psychologist ", image: "/emily.png?height=100&width=100" },
-    { name: "Brij M Singh", role: "IT Specialist", image: "/brij.png?height=100&width=100" },
-    { name: "Jayshree Singh", role: "Head of Software", image: "/jay2.png?height=100&width=100" },
+    { name: "Brij M Singh", role: "Head of Software", image: "/brij.png?height=100&width=100" },
+    { name: "Dave Rhoads", role: "IT Specialist", image: "/jay2.png?height=100&width=100" },
   ]
 
   return (
